@@ -14,10 +14,17 @@ project ("mini_grep")
 # Add source to this project's executable.
 add_executable (mini_grep
 	main.cpp
+	CLogReader.cpp
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET mini_grep PROPERTY CXX_STANDARD 20)
 endif()
+
+add_custom_command(
+        TARGET mini_grep POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/input
+                ${CMAKE_CURRENT_BINARY_DIR}/input)
 
 # TODO: Add tests and install targets if needed.
