@@ -4,7 +4,7 @@
 
 namespace {
 
-bool accepted(const char* str, const char* filter) {
+bool match(const char* str, const char* filter) {
 	return std::isalpha(str[0]);
 }
 
@@ -30,7 +30,7 @@ bool CLogReader::SetFilter(const char* filter) {
 
 bool CLogReader::GetNextLine(char* buf, const int bufSize) {
 	while (fgets(buf, bufSize, file_) != nullptr) {
-		if (accepted(buf, filter_)) {
+		if (match(buf, filter_)) {
 			return true;
 		}
 	}
