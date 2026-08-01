@@ -11,6 +11,8 @@ endif()
 
 project ("mini_grep")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
 # Add source to this project's executable.
 add_executable (mini_grep
 	main.cpp
