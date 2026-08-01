@@ -24,25 +24,28 @@ bool filterFile(const char* filename, const char* filter) {
 	return true;
 }
 
-#if 0
-int main()
+#if 1
+int main(int argc, const char* argv[])
 {
+	if (argc != 3) {
+		std::cout << "Usage: " << argv[0] << " <filename> <filter>\n";
+		return 0;
+	}
+
 	CLogReader reader;
-	const char* const filename = "input";
-	if (!reader.Open(filename)) {
-		std::cerr << "Can't open file \"" << filename << "\"\n";
+	if (!reader.Open(argv[1])) {
+		std::cerr << "Can't open file \"" << argv[1] << "\"\n";
 		return 1;
 	}
 
-	const char* const filter = "*";
-	if (!reader.SetFilter(filter)) {
-		std::cerr << "Can't set filter \"" << filter << "\"\n";
+	if (!reader.SetFilter(argv[2])) {
+		std::cerr << "Can't set filter \"" << argv[2] << "\"\n";
 		return false;
 	}
 
 	char buf[BUF_SIZE];
 	while (reader.GetNextLine(buf, BUF_SIZE)) {
-		std::cout << buf;
+		std::cout << buf << "\n";
 	}
 	return 0;
 }
