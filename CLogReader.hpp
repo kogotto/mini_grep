@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+constexpr int MAX_STR_LENGTH = 1024;
+
 class CLogReader {
 public:
 	CLogReader() = default;

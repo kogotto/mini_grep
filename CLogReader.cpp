@@ -1,29 +1,30 @@
 #include "CLogReader.hpp"
 
-#include <vector>
+#include <cstring>
 
 namespace {
 
-using Row = std::vector<bool>;
-using Matrix = std::vector<Row>;
+constexpr int rawStorageSize = MAX_STR_LENGTH * MAX_STR_LENGTH;
+bool rawStorage[rawStorageSize] = {};
 
-Row emptyRow(size_t size) {
-	return Row(size, false);
-}
-
-Matrix emptyMatrix(size_t rows, size_t cols) {
-	Matrix result;
-	result.reserve(rows);
-	for (int i = 0; i < rows; ++i) {
-		result.emplace_back(emptyRow(cols));
+struct Matrix {
+	Matrix(size_t rowCount, size_t colCount)
+		: rowCount{ rowCount }
+		, colCount{ colCount } {
 	}
-	return result;
-}
+
+	bool* operator[](size_t row) {
+		return rawStorage + row * colCount;
+	}
+private:
+	size_t rowCount;
+	size_t colCount;
+};
 
 bool match(const char* str, const char* filter) {
 	const auto strSize = strlen(str);
 	const auto filterSize = strlen(filter);
-	auto matrix = emptyMatrix(strSize + 1, filterSize + 1);
+	Matrix matrix{ strSize, filterSize };
 
 	matrix[0][0] = true;
 	for (int i = 1; i <= strSize; ++i) {
