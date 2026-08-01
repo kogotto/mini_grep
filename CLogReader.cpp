@@ -40,6 +40,14 @@ bool match(const char* str, const char* filter) {
 					matrix[i][j] = matrix[i - 1][j] || matrix[i][j - 1];
 				}
 				break;
+			case '?':
+				if (i == 0) {
+					matrix[i][j] = false;
+				}
+				else {
+					matrix[i][j] = matrix[i - 1][j - 1];
+				}
+				break;
 			default:
 				if (i == 0) {
 					matrix[i][j] = false;

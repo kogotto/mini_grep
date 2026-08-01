@@ -56,5 +56,14 @@ int main() {
 	filterFile("input", "qw*r");
 	filterFile("input", "q*er");
 	filterFile("input", "*r*");
+	filterFile("input", "?");
+	filterFile("input", "??");
+	filterFile("input", "???");
+	filterFile("input", "?d");
+	filterFile("input", "a?");
+	filterFile("input", "?d?");
+	filterFile("input", "order ? opened");
+	filterFile("input", "order ?* closed");
+	filterFile("input", "order ?*? *");
 }
 #endif
