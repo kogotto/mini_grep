@@ -17,6 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 add_executable (mini_grep
 	main.cpp
 	CLogReader.cpp
+    MMFile.cpp
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
