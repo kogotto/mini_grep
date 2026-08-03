@@ -64,23 +64,6 @@ bool match(const char* str, size_t strSize, const char* filter, size_t filterSiz
 	return matrix[strSize][filterSize];
 }
 
-bool readLine(char* buf, int bufSize, FILE* file) {
-	if (feof(file)) {
-		return false;
-	}
-
-	int nextPlace = 0;
-	for (; nextPlace < bufSize - 1;) {
-		const int c = fgetc(file);
-		if (c == EOF || c == '\n') {
-			break;
-		}
-		buf[nextPlace++] = static_cast<char>(c);
-	}
-	buf[nextPlace] = '\0';
-	return true;
-}
-
 } // namespace
 
 bool CLogReader::Open(const char* filename) {
