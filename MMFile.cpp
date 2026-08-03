@@ -89,6 +89,11 @@ bool MMFile::Open(const char* filename) {
 		Close();
 		return false;
 	}
+	if (filesize_ == 0) {
+		printf("File \"%s\" is empty\n", filename);
+		Close();
+		return false;
+	}
 
 	mapping_ = MyCreateFileMapping(file_);
 	if (mapping_ == NULL) {
