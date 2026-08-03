@@ -4,6 +4,8 @@
 
 #include "MMFile.hpp"
 
+constexpr int MAX_FILTER_LENGTH = 1024;
+
 class CLogReader {
 public:
 	CLogReader() = default;

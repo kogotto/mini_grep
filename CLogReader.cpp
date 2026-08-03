@@ -78,9 +78,13 @@ void CLogReader::Close() {
 }
 
 bool CLogReader::SetFilter(const char* filter) {
-	filter_ = filter;
-	filterLength_ = strlen(filter);
+	const auto len = strlen(filter);
+	if (len > MAX_FILTER_LENGTH) {
+		return false;
+	}
 
+	filter_ = filter;
+	filterLength_ = len;
 	return true;
 }
 
