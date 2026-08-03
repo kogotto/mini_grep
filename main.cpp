@@ -3,6 +3,14 @@
 #include "CLogReader.hpp"
 
 #if 1
+
+void ProcessString(const char* str, int len) {
+	for (int i = 0; i < len; ++i) {
+		std::cout << str[i];
+	}
+	std::cout << '\n';
+}
+
 int main(int argc, const char* argv[])
 {
 	if (argc != 3) {
@@ -18,15 +26,17 @@ int main(int argc, const char* argv[])
 
 	if (!reader.SetFilter(argv[2])) {
 		std::cerr << "Can't set filter \"" << argv[2] << "\"\n";
-		return false;
+		return 2;
 	}
 
-	char buf[MAX_STR_LENGTH];
-	while (reader.GetNextLine(buf, MAX_STR_LENGTH)) {
-		std::cout << buf << "\n";
+	const char* str = nullptr;
+	int len = 0;
+	while (reader.GetNextLine(str, len)) {
+		ProcessString(str, len);
 	}
 	return 0;
 }
+
 #else
 
 bool filterFile(const char* filename, const char* filter) {

@@ -1,9 +1,12 @@
 #include "CLogReader.hpp"
 
 #include <cstring>
+#include <Windows.h>
+#include <iostream>
 
 namespace {
 
+constexpr int MAX_STR_LENGTH = 1024;
 constexpr int rawStorageSize = MAX_STR_LENGTH * MAX_STR_LENGTH;
 bool rawStorage[rawStorageSize] = {};
 
@@ -21,9 +24,7 @@ private:
 	size_t colCount;
 };
 
-bool match(const char* str, const char* filter) {
-	const auto strSize = strlen(str);
-	const auto filterSize = strlen(filter);
+bool match(const char* str, size_t strSize, const char* filter, size_t filterSize) {
 	Matrix matrix{ strSize, filterSize };
 
 	matrix[0][0] = true;
@@ -84,26 +85,26 @@ bool readLine(char* buf, int bufSize, FILE* file) {
 } // namespace
 
 bool CLogReader::Open(const char* filename) {
-	if (file_) {
-		Close();
+	if (mmfile_.Opened()) {
+		mmfile_.Close();
 	}
-	file_ = fopen(filename, "r");
-	return file_ != nullptr;
+	return mmfile_.Open(filename);
 }
 
 void CLogReader::Close() {
-	fclose(file_);
-	file_ = nullptr;
+	mmfile_.Close();
 }
 
 bool CLogReader::SetFilter(const char* filter) {
 	filter_ = filter;
+	filterLength_ = strlen(filter);
+
 	return true;
 }
 
-bool CLogReader::GetNextLine(char* buf, const int bufSize) {
-	while (readLine(buf, bufSize, file_)) {
-		if (match(buf, filter_)) {
+bool CLogReader::GetNextLine(const char*& str, int& len) {
+	while (mmfile_.GetNextLine(str, len)) {
+		if (match(str, len, filter_, filterLength_)) {
 			return true;
 		}
 	}

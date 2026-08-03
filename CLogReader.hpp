@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-constexpr int MAX_STR_LENGTH = 1024;
+#include "MMFile.hpp"
 
 class CLogReader {
 public:
@@ -13,9 +13,10 @@ public:
 	void Close();
 
 	bool SetFilter(const char* filter);
-	bool GetNextLine(char* buf, const int bufSize);
+	bool GetNextLine(const char*& str, int& len);
 
 private:
-	std::FILE* file_{ nullptr };
+	MMFile mmfile_;
 	const char* filter_{ nullptr };
+	size_t filterLength_{ 0 };
 };
