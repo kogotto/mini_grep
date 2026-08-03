@@ -145,7 +145,9 @@ bool MMFile::GetNextLine(const char*& str, size_t& len) {
 		++pos;
 	}
 	str = buffer;
-	len = pos;
+	len = (pos != 0 && buffer[pos - 1] == '\r')
+		? (pos - 1)
+		: pos;
 	Seek(pos + 1);
 	return true;
 }
