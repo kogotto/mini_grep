@@ -13,7 +13,7 @@ public:
 	void Close();
 
 	bool SetFilter(const char* filter);
-	bool GetNextLine(const char*& str, int& len);
+	bool GetNextLine(const char*& str, size_t& len);
 
 private:
 	MMFile mmfile_;

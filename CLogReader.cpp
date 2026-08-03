@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <Windows.h>
-#include <iostream>
 
 namespace {
 
@@ -102,7 +101,7 @@ bool CLogReader::SetFilter(const char* filter) {
 	return true;
 }
 
-bool CLogReader::GetNextLine(const char*& str, int& len) {
+bool CLogReader::GetNextLine(const char*& str, size_t& len) {
 	while (mmfile_.GetNextLine(str, len)) {
 		if (match(str, len, filter_, filterLength_)) {
 			return true;

@@ -1,81 +1,45 @@
-﻿#include <iostream>
+﻿#include <stdio.h>
 
 #include "CLogReader.hpp"
 
-#if 1
+namespace {
 
-void ProcessString(const char* str, int len) {
+void ProcessString(const char* str, size_t len) {
 	for (int i = 0; i < len; ++i) {
-		std::cout << str[i];
+		putchar(str[i]);
 	}
-	std::cout << '\n';
+	putchar('\n');
 }
+
+constexpr int NORMAL_EXIT = 0;
+constexpr int WRONG_USAGE = 1;
+constexpr int CAN_NOT_OPEN_FILE = 2;
+constexpr int CAN_NOT_SET_FILTER = 3;
+
+} // namespace
 
 int main(int argc, const char* argv[])
 {
 	if (argc != 3) {
-		std::cout << "Usage: " << argv[0] << " <filename> <filter>\n";
-		return 0;
+		printf("Usage: %s <filename> <filter> \n", argv[0]);
+		return WRONG_USAGE;
 	}
 
 	CLogReader reader;
 	if (!reader.Open(argv[1])) {
-		std::cerr << "Can't open file \"" << argv[1] << "\"\n";
-		return 1;
+		printf("Can't open file \"%s\"\n", argv[1]);
+		return CAN_NOT_OPEN_FILE;
 	}
 
 	if (!reader.SetFilter(argv[2])) {
-		std::cerr << "Can't set filter \"" << argv[2] << "\"\n";
-		return 2;
+		printf("Can't set filter \"%s\"\n", argv[2]);
+		return CAN_NOT_SET_FILTER;
 	}
 
 	const char* str = nullptr;
-	int len = 0;
+	size_t len = 0;
 	while (reader.GetNextLine(str, len)) {
 		ProcessString(str, len);
 	}
-	return 0;
+	return NORMAL_EXIT;
 }
-
-#else
-
-bool filterFile(const char* filename, const char* filter) {
-	CLogReader reader;
-	if (!reader.Open(filename)) {
-		std::cerr << "Can't open file \"" << filename << "\"\n";
-		return false;
-	}
-
-	if (!reader.SetFilter(filter)) {
-		std::cerr << "Can't set filter \"" << filter << "\"\n";
-		return false;
-	}
-
-	std::cout << ":::: filter \"" << filter << "\"\n";
-	char buf[MAX_STR_LENGTH];
-	while (reader.GetNextLine(buf, MAX_STR_LENGTH)) {
-		std::cout << buf << "\n";
-	}
-	return true;
-}
-
-int main() {
-	filterFile("input", "*");
-	filterFile("input", "qwer");
-	filterFile("input", "q*");
-	filterFile("input", "*r");
-	filterFile("input", "q*r");
-	filterFile("input", "qw*r");
-	filterFile("input", "q*er");
-	filterFile("input", "*r*");
-	filterFile("input", "?");
-	filterFile("input", "??");
-	filterFile("input", "???");
-	filterFile("input", "?d");
-	filterFile("input", "a?");
-	filterFile("input", "?d?");
-	filterFile("input", "order ? opened");
-	filterFile("input", "order ?* closed");
-	filterFile("input", "order ?*? *");
-}
-#endif
