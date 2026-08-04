@@ -6,6 +6,15 @@
 
 constexpr int MAX_FILTER_LENGTH = 1024;
 
+namespace detail {
+
+struct Storage {
+	bool row1[MAX_FILTER_LENGTH + 1];
+	bool row2[MAX_FILTER_LENGTH + 1];
+};
+
+} // namespace detail
+
 class CLogReader {
 public:
 	CLogReader() = default;
@@ -21,4 +30,5 @@ private:
 	MMFile mmfile_;
 	const char* filter_{ nullptr };
 	size_t filterLength_{ 0 };
+	detail::Storage storage_;
 };

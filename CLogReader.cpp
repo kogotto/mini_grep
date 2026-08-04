@@ -5,14 +5,11 @@
 
 namespace {
 
-bool row1[MAX_FILTER_LENGTH + 1];
-bool row2[MAX_FILTER_LENGTH + 1];
-
 struct Matrix {
-	Matrix(size_t colCount)
-		: currentRow_{ row1 }
-		, previousRow_{ row2 } {
-		memset(previousRow_, 0, sizeof(row2));
+	Matrix(detail::Storage& storage)
+		: currentRow_{ storage.row1 }
+		, previousRow_{ storage.row2 } {
+		memset(previousRow_, 0, sizeof(storage.row2));
 	}
 
 	bool* CurrentRow() {
@@ -34,8 +31,8 @@ private:
 	bool* previousRow_;
 };
 
-bool match(const char* str, size_t strSize, const char* filter, size_t filterSize) {
-	Matrix matrix{ filterSize + 1};
+bool match(const char* str, size_t strSize, const char* filter, size_t filterSize, detail::Storage& storage) {
+	Matrix matrix{ storage };
 
 	auto innerLoop = [&] (int i) {
 		for (int j = 1; j <= filterSize; ++j) {
@@ -96,7 +93,7 @@ bool CLogReader::SetFilter(const char* filter) {
 
 bool CLogReader::GetNextLine(const char*& str, size_t& len) {
 	while (mmfile_.GetNextLine(str, len)) {
-		if (match(str, len, filter_, filterLength_)) {
+		if (match(str, len, filter_, filterLength_, storage_)) {
 			return true;
 		}
 	}
