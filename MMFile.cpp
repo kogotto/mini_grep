@@ -102,9 +102,10 @@ bool MMFile::Open(const char* filename) {
 		return false;
 	}
 
-	buffer_ = MyMapViewOfFile(mapping_, 0, filesize_);
-	if (buffer_ == NULL) {
-		printf("Can not map view of file with error %d\n", GetLastError());
+	currentOffset_ = 0;
+	currentEnd_ = 0;
+	currentChunkSize_ = 0;
+	if (!LoadNextChunk()) {
 		Close();
 		return false;
 	}
@@ -119,18 +120,9 @@ bool MMFile::Opened() const {
 }
 
 void MMFile::Close() {
-	if (buffer_ != nullptr) {
-		UnmapViewOfFile(buffer_);
-		buffer_ = nullptr;
-	}
-	if (mapping_ != nullptr) {
-		CloseHandle(mapping_);
-		mapping_ = nullptr;
-	}
-	filesize_ = 0;
-	if (file_ != INVALID_HANDLE_VALUE) {
-		CloseHandle(file_);
-	}
+	UnmapBuffer();
+	DestroyFileMapping();
+	CloseFile();
 }
 
 bool MMFile::GetNextLine(const char*& str, size_t& len) {
@@ -157,11 +149,80 @@ bool MMFile::GetBuffer(const char*& buffer, size_t& len) {
 		return false;
 	}
 
-	buffer = static_cast<const char*>(buffer_) + pos_;
-	len = filesize_ - pos_;
+	if (pos_ >= currentEnd_) {
+		if (!LoadNextChunk()) {
+			return false;
+		}
+	}
+
+	buffer = buffer_ + (pos_ - currentOffset_);
+	len = currentEnd_ - pos_;
+	return true;
+}
+
+size_t LastNewLine(const char* begin, const char* end) {
+	while (true) {
+		if (begin == end) {
+			return 0;
+		}
+		if (*--end == '\n') {
+			return end - begin + 1;
+		}
+	}
+}
+
+bool MMFile::LoadNextChunk() {
+	const size_t rawNewOffset = currentEnd_;
+	const size_t newOffset = (rawNewOffset / granularity_) * granularity_;
+	const size_t remainingBytes = filesize_ - newOffset;
+	const size_t bytesToRead = min(chunkSize_, remainingBytes);
+	if (!LoadChunk(newOffset, bytesToRead)) {
+		return false;
+	}
+	const size_t effectiveWindow = (newOffset + bytesToRead < filesize_)
+		? LastNewLine(buffer_, buffer_ + bytesToRead)
+		: bytesToRead;
+	currentEnd_ = currentOffset_ + effectiveWindow;
+	return true;
+}
+
+bool MMFile::LoadChunk(size_t offset, size_t bytesToRead) {
+	UnmapBuffer();
+
+	currentOffset_ = offset;
+	currentChunkSize_ = bytesToRead;
+	rawBuffer_ = MyMapViewOfFile(mapping_, currentOffset_, currentChunkSize_);
+	if (rawBuffer_ == NULL) {
+		printf("Can not map view of file with error %d\n", GetLastError());
+		Close();
+		return false;
+	}
+	buffer_ = static_cast<const char*>(rawBuffer_);
 	return true;
 }
 
 void MMFile::Seek(size_t pos) {
 	pos_ += pos;
+}
+
+void MMFile::UnmapBuffer() {
+	if (rawBuffer_ != nullptr) {
+		UnmapViewOfFile(rawBuffer_);
+		rawBuffer_ = nullptr;
+		buffer_ = nullptr;
+	}
+}
+
+void MMFile::DestroyFileMapping() {
+	if (mapping_ != nullptr) {
+		CloseHandle(mapping_);
+		mapping_ = nullptr;
+	}
+}
+
+void MMFile::CloseFile() {
+	filesize_ = 0;
+	if (file_ != INVALID_HANDLE_VALUE) {
+		CloseHandle(file_);
+	}
 }
