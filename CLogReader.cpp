@@ -15,15 +15,15 @@ struct Matrix {
 		memset(previousRow_, 0, sizeof(row2));
 	}
 
-	bool* currentRow() {
+	bool* CurrentRow() {
 		return currentRow_;
 	}
 
-	bool* previousRow() {
+	bool* PreviousRow() {
 		return previousRow_;
 	}
 
-	void swapRows() {
+	void SwapRows() {
 		bool* tmp = currentRow_;
 		currentRow_ = previousRow_;
 		previousRow_ = tmp;
@@ -41,33 +41,33 @@ bool match(const char* str, size_t strSize, const char* filter, size_t filterSiz
 		for (int j = 1; j <= filterSize; ++j) {
 			switch (filter[j - 1]) {
 			case '*':
-				matrix.currentRow()[j] = matrix.previousRow()[j] || matrix.currentRow()[j - 1];
+				matrix.CurrentRow()[j] = matrix.PreviousRow()[j] || matrix.CurrentRow()[j - 1];
 				break;
 			case '?':
-				matrix.currentRow()[j] = matrix.previousRow()[j - 1];
+				matrix.CurrentRow()[j] = matrix.PreviousRow()[j - 1];
 				break;
 			default:
 				if (i == 0) {
-					matrix.currentRow()[j] = false;
+					matrix.CurrentRow()[j] = false;
 				}
 				else {
-					matrix.currentRow()[j] = matrix.previousRow()[j - 1] && (filter[j - 1] == str[i - 1]);
+					matrix.CurrentRow()[j] = matrix.PreviousRow()[j - 1] && (filter[j - 1] == str[i - 1]);
 				}
 				break;
 			}
 		}
 	};
 
-	matrix.currentRow()[0] = true;
+	matrix.CurrentRow()[0] = true;
 	innerLoop(0);
-	matrix.swapRows();
+	matrix.SwapRows();
 	for (int i = 1; i <= strSize; ++i) {
-		matrix.currentRow()[0] = false;
+		matrix.CurrentRow()[0] = false;
 		innerLoop(i);
-		matrix.swapRows();
+		matrix.SwapRows();
 	}
 
-	return matrix.previousRow()[filterSize];
+	return matrix.PreviousRow()[filterSize];
 }
 
 } // namespace
