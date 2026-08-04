@@ -5,63 +5,69 @@
 
 namespace {
 
-constexpr int MAX_STR_LENGTH = 1024;
-constexpr int rawStorageSize = MAX_STR_LENGTH * MAX_STR_LENGTH;
-bool rawStorage[rawStorageSize] = {};
+bool row1[MAX_FILTER_LENGTH + 1];
+bool row2[MAX_FILTER_LENGTH + 1];
 
 struct Matrix {
-	Matrix(size_t rowCount, size_t colCount)
-		: rowCount{ rowCount }
-		, colCount{ colCount } {
+	Matrix(size_t colCount)
+		: currentRow_{ row1 }
+		, previousRow_{ row2 } {
+		memset(previousRow_, 0, sizeof(row2));
 	}
 
-	bool* operator[](size_t row) {
-		return rawStorage + row * colCount;
+	bool* currentRow() {
+		return currentRow_;
 	}
+
+	bool* previousRow() {
+		return previousRow_;
+	}
+
+	void swapRows() {
+		bool* tmp = currentRow_;
+		currentRow_ = previousRow_;
+		previousRow_ = tmp;
+	}
+
 private:
-	size_t rowCount;
-	size_t colCount;
+	bool* currentRow_;
+	bool* previousRow_;
 };
 
 bool match(const char* str, size_t strSize, const char* filter, size_t filterSize) {
-	Matrix matrix{ strSize, filterSize };
+	Matrix matrix{ filterSize + 1};
 
-	matrix[0][0] = true;
-	for (int i = 1; i <= strSize; ++i) {
-		matrix[i][0] = false;
-	}
-	for (int i = 0; i <= strSize; ++i) {
+	auto innerLoop = [&] (int i) {
 		for (int j = 1; j <= filterSize; ++j) {
 			switch (filter[j - 1]) {
 			case '*':
-				if (i == 0) {
-					matrix[i][j] = matrix[i][j - 1];
-				}
-				else {
-					matrix[i][j] = matrix[i - 1][j] || matrix[i][j - 1];
-				}
+				matrix.currentRow()[j] = matrix.previousRow()[j] || matrix.currentRow()[j - 1];
 				break;
 			case '?':
-				if (i == 0) {
-					matrix[i][j] = false;
-				}
-				else {
-					matrix[i][j] = matrix[i - 1][j - 1];
-				}
+				matrix.currentRow()[j] = matrix.previousRow()[j - 1];
 				break;
 			default:
 				if (i == 0) {
-					matrix[i][j] = false;
+					matrix.currentRow()[j] = false;
 				}
 				else {
-					matrix[i][j] = matrix[i - 1][j - 1] && filter[j - 1] == str[i - 1];
+					matrix.currentRow()[j] = matrix.previousRow()[j - 1] && (filter[j - 1] == str[i - 1]);
 				}
 				break;
 			}
 		}
+	};
+
+	matrix.currentRow()[0] = true;
+	innerLoop(0);
+	matrix.swapRows();
+	for (int i = 1; i <= strSize; ++i) {
+		matrix.currentRow()[0] = false;
+		innerLoop(i);
+		matrix.swapRows();
 	}
 
-	return matrix[strSize][filterSize];
+	return matrix.previousRow()[filterSize];
 }
 
 } // namespace
