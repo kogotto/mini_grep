@@ -53,15 +53,14 @@ bool match(const char* str, size_t strSize, const char* filter, size_t filterSiz
 				break;
 			}
 		}
+		matrix.SwapRows();
 	};
 
 	matrix.CurrentRow()[0] = true;
 	innerLoop(0);
-	matrix.SwapRows();
 	for (int i = 1; i <= strSize; ++i) {
 		matrix.CurrentRow()[0] = false;
 		innerLoop(i);
-		matrix.SwapRows();
 	}
 
 	return matrix.PreviousRow()[filterSize];
