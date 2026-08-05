@@ -28,7 +28,7 @@ public:
 
 private:
 	MMFile mmfile_;
-	const char* filter_{ nullptr };
+	char filter_[MAX_FILTER_LENGTH + 1];
 	size_t filterLength_{ 0 };
 	detail::Storage storage_;
 };

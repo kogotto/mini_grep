@@ -66,6 +66,23 @@ bool match(const char* str, size_t strSize, const char* filter, size_t filterSiz
 	return matrix.PreviousRow()[filterSize];
 }
 
+size_t CopyAndRemoveDublicates(const char* rawFilter, char* outFilter) {
+	*outFilter = *rawFilter;
+	if (*outFilter == '\0') {
+		return 1;
+	}
+	size_t outPos = 1;
+	for (int inPos = 1; rawFilter[inPos] != '\0'; ++inPos) {
+		if (rawFilter[inPos] == '*' && outFilter[outPos - 1] == '*') {
+			continue;
+		}
+		outFilter[outPos] = rawFilter[inPos];
+		++outPos;
+	}
+	outFilter[outPos] = '\0';
+	return outPos;
+}
+
 } // namespace
 
 bool CLogReader::Open(const char* filename) {
@@ -85,8 +102,7 @@ bool CLogReader::SetFilter(const char* filter) {
 		return false;
 	}
 
-	filter_ = filter;
-	filterLength_ = len;
+	filterLength_ = CopyAndRemoveDublicates(filter, filter_);
 	return true;
 }
 
