@@ -37,6 +37,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(tests
     remove_dublicates_tests.cpp
+    match_tests.cpp
 )
 target_link_libraries(tests PRIVATE common gtest_main)
 
