@@ -3,7 +3,7 @@
 size_t CopyAndRemoveDublicates(const char* rawFilter, char* outFilter) {
 	*outFilter = *rawFilter;
 	if (*outFilter == '\0') {
-		return 1;
+		return 0;
 	}
 	size_t outPos = 1;
 	for (int inPos = 1; rawFilter[inPos] != '\0'; ++inPos) {
