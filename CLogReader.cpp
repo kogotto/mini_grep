@@ -1,9 +1,6 @@
 #include "CLogReader.hpp"
 
 bool CLogReader::Open(const char* filename) {
-	if (mmfile_.Opened()) {
-		mmfile_.Close();
-	}
 	return mmfile_.Open(filename);
 }
 

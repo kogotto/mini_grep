@@ -8,7 +8,6 @@ public:
 	~MMFile();
 
 	bool Open(const char* filename);
-	bool Opened() const;	
 	void Close();
 
 	bool GetNextLine(const char*& str, size_t& len);

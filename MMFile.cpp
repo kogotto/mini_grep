@@ -78,6 +78,8 @@ MMFile::~MMFile() {
 }
 
 bool MMFile::Open(const char* filename) {
+	Close();
+
 	file_ = MyCreateFile(filename);
 	if (file_ == INVALID_HANDLE_VALUE) {
 		printf("Can not open file \"%s\" with error %d\n", filename, GetLastError());
@@ -113,10 +115,6 @@ bool MMFile::Open(const char* filename) {
 	pos_ = 0;
 
 	return true;
-}
-
-bool MMFile::Opened() const {
-	return file_ != INVALID_HANDLE_VALUE;
 }
 
 void MMFile::Close() {
