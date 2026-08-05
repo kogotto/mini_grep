@@ -222,5 +222,6 @@ void MMFile::CloseFile() {
 	filesize_ = 0;
 	if (file_ != INVALID_HANDLE_VALUE) {
 		CloseHandle(file_);
+		file_ = INVALID_HANDLE_VALUE;
 	}
 }

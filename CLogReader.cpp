@@ -1,5 +1,15 @@
 #include "CLogReader.hpp"
 
+CLogReader::CLogReader() {
+	filter_[0] = '*';
+	filter_[1] = '\0';
+	filterLength_ = 1;
+}
+
+CLogReader::~CLogReader() {
+	Close();
+}
+
 bool CLogReader::Open(const char* filename) {
 	return mmfile_.Open(filename);
 }

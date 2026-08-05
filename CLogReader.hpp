@@ -5,8 +5,8 @@
 
 class CLogReader {
 public:
-	CLogReader() = default;
-	~CLogReader() = default;
+	CLogReader();
+	~CLogReader();
 
 	bool Open(const char* filename);
 	void Close();
